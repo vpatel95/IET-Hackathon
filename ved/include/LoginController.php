@@ -15,7 +15,6 @@
             // opening db connection
             $db = new DbConnect();
             $this->conn = $db->connect();
-            mysqli_autocommit($conn, FALSE);
         }
 
         public function login($username, $password) {
