@@ -6,12 +6,14 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -22,23 +24,27 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Random;
 
 import static java.lang.System.exit;
 
 public class MainGame extends AppCompatActivity {
-Button b11,b12,b13,b21,b22,b23,b31,b32,b33;
+Button b11,b12,b13,b21,b22,b23,b31,b32,b33,but;
     Handler handler;
     anim1 tlist=new anim1();
+
     int ar[]={11,12,13,21,22,23,31,32,33};
-    int i=0,flag1=0;
+    int i=0,flag1=1;
     int stat=0;
-    int level=1;
+    int level=1,value1,value2;
     String[] co={"#81D4FA","#FFE082","#FFAB91","#80CBC4"};
+    ArrayList<Integer> path,path1;
 int[] test1={11,31,32,21,11};
 
-String UPLOAD_URL="http://localhost/IET-Hackathon/ved/functions/index.php";
+String UPLOAD_URL="http://ved.pe.hu/index.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +60,12 @@ String UPLOAD_URL="http://localhost/IET-Hackathon/ved/functions/index.php";
          b31=(Button)findViewById(R.id.third1);
          b32=(Button)findViewById(R.id.third2);
          b33=(Button)findViewById(R.id.third3);
+        TextView t=(TextView)findViewById(R.id.textView);
+        t.setText("LEVEL "+(level));
+try {
+    generator();
 
+}catch (Exception e){}
 clickon();
 Button bl=(Button)findViewById(R.id.button);
         bl.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +74,7 @@ Button bl=(Button)findViewById(R.id.button);
                 i = 0;
                 for (int j = 0; j < 9; j++)
              disabling(false);
-           gamestart(ar[i]);
+           gamestart(path.get(i));
 
             }
         });
@@ -86,7 +97,7 @@ Button bl=(Button)findViewById(R.id.button);
     ///////////////////////////////////////////////////////////////////////////////////////
     protected int test(int a,int c){
         System.out.println(">>"+a+" "+level+" "+stat+" "+c);
-        if(test1[a]==c){
+        if(path.get(a)==c){
 
             return a+1;
         }
@@ -102,19 +113,19 @@ Button bl=(Button)findViewById(R.id.button);
                     break;
             case 12: b12.startAnimation(an);
                 break;
-            case 13: b13.startAnimation(an);
+            case 13: ;b13.startAnimation(an);
                 break;
-            case 21: b21.startAnimation(an);
+            case 21: ;b21.startAnimation(an);
                 break;
             case 22: b22.startAnimation(an);
                 break;
-            case 23: b23.startAnimation(an);
+            case 23:; b23.startAnimation(an);
                 break;
-            case 31: b31.startAnimation(an);
+            case 31:; b31.startAnimation(an);
                 break;
-            case 32: b32.startAnimation(an);
+            case 32:; b32.startAnimation(an);
                 break;
-            case 33: b33.startAnimation(an);
+            case 33:; b33.startAnimation(an);
                 break;
            default:  exit(0);
         }
@@ -128,10 +139,10 @@ Button bl=(Button)findViewById(R.id.button);
 
         @Override
         public void onAnimationEnd(Animation animation) {
-          if(i<test1.length-1){ gamestart(test1[++i]);}
-            if(i==test1.length-1){
+            if(i<path.size()-1){ gamestart(path.get(++i));}
+            if(i==path.size()-1){
 
-                    disabling(true);
+                disabling(true);
             }
         }
 
@@ -268,13 +279,38 @@ public void clickon() {
 }
     public void success(){
         Toast.makeText(getApplicationContext(),"win", Toast.LENGTH_LONG).show();
+        TextView t=(TextView)findViewById(R.id.textView);
+        t.setText("LEVEL "+(level+1));
+        TextView t1=(TextView)findViewById(R.id.best);
+        t1.setText("COOL!!");
+        path1  =new ArrayList<Integer>();
+        value1=level;
+        int z=0;
+        while(z<path.size()||z==0)
+           {   path1.add(path.get(z)); System.out.println(".................."+path1.get(z));z++;
+           }
         level++;stat=0;
-        Toast.makeText(MainGame.this, test1.toString(), Toast.LENGTH_LONG).show();
+        try {
+            generator();
+
+        }catch (Exception e){}
+        flag1=1;
+
         uploadImage();
     }
     public void lose(){
         Toast.makeText(getApplicationContext(),"lose", Toast.LENGTH_LONG).show();
+        path1  =new ArrayList<Integer>();
+        value1=level;
+        int z=0;
+        TextView t1=(TextView)findViewById(R.id.best);
+        t1.setText("Try Again");
+        while(z<path.size()||z==0)
+        {   path1.add(path.get(z)); System.out.println(".................."+path1.get(z));z++;
+        }
       //  i=0;
+        flag1=-1;
+        uploadImage();
        // gamestart(ar[i]);
     }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,10 +324,10 @@ private void uploadImage(){
                     //Disimissing the progress dialog
                     loading.dismiss();
                     if(s.trim().equals("success"))
-                    {  Toast.makeText(MainGame.this, s, Toast.LENGTH_LONG).show();
+                    {
                     }
-                    else
-                        Toast.makeText(MainGame.this, s, Toast.LENGTH_LONG).show();
+                    else{}
+                      //  Toast.makeText(MainGame.this, s, Toast.LENGTH_LONG).show();
                 }
             },
             new Response.ErrorListener() {
@@ -301,7 +337,7 @@ private void uploadImage(){
                     loading.dismiss();
 
                     //Showing toast   + volleyError.getMessage().toString()
-                    Toast.makeText(MainGame.this,"Error", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainGame.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
                 }
             }){
         @Override
@@ -310,11 +346,11 @@ private void uploadImage(){
 
 
             //Getting Image Name
-            String lev = level+"";
+            String lev = value1+"";
             String status=flag1+"";
             String pass="";
-            for(int j=0;j<test1.length;j++){
-                pass=pass+","+test1[j];
+            for(int j=0;j<path1.size();j++){
+                pass=pass+","+path1.get(j);
             }
           //  String pass=pass1.getText().toString().trim();
             //Creating parameters
@@ -336,4 +372,23 @@ private void uploadImage(){
     //Adding request to the queue
     requestQueue.add(stringRequest);
 }
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    private void generator(){
+        int l,pos;
+      path  =new ArrayList<Integer>();
+        Random random = new Random();
+        for (l=0;l<level;l++) {
+            pos=random.nextInt(9);
+            System.out.println(""+pos);
+            if(l!=0){
+            if (!(path.get(l-1)==ar[pos])){
+                   path.add(ar[pos]);
+                Log.i("generator: ",path.get(l)+"<<<");
+
+               }else {l--;;}
+
+        }else{ path.add(ar[pos]); }
+        }
+    }
+
 }
