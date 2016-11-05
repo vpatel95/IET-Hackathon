@@ -16,42 +16,12 @@
             $db = new DbConnect();
             $this->conn = $db->connect();
         }
-
-        public function updatePath($level, $path, $status) {
-            if(isPathExist($path)) {
-                if($stmt = mysqli_prepare($conn, "UPDATE path SET priority = ?")){
-                    if($status == '1')
-                        $newPriority = getPriority($path)-1;
-                    else 
-                        $newPriority = getPriority($path)+1;
-                    mysqli_stmt_bind_param($stmt, 'i', $newPriority);
-                    mysqli_stmt_execute($stmt);
-                }
-            } elseif (!isPathExist($path)) {
-                if($stmt = mysqli_prepare($conn, "INSERT INTO path (level, path) VALUES (?, ?)")) {
-                    mysqli_stmt_bind_param($stmt, 'is', $level, $path);
-                    mysqli_stmt_execute($stmt);
-                }
-                if($status == '1'){
-                    $newPriority = getPriority($path)-1;
-                    if($stmt = mysqli_prepare($conn, "UPDATE path SET priority = ?")){
-                        mysqli_stmt_bind_param($stmt, 'i', $newPriority);
-                        mysqli_stmt_execute($stmt);
-                    }
-                } elseif ($status == '-1') {
-                    $newPriority = getPriority($path)+1;
-                    if($stmt = mysqli_prepare($conn, "UPDATE path SET priority = ?")){
-                        mysqli_stmt_bind_param($stmt, 'i', $newPriority);
-                        mysqli_stmt_execute($stmt);
-                    }
-                }
-            }
-        }
-
-        private isPathExist($path) {
-            if($stmt = mysqli_prepare($conn, "SELECT priority FROM path WHERE path = ?")) {
+        
+        private function isPathExist($path) {
+            if($stmt = mysqli_prepare($this->conn, "SELECT id FROM path WHERE path = ?")) {
                 mysqli_stmt_bind_param($stmt, 's', $path);
                 mysqli_stmt_execute($stmt);
+                mysqli_stmt_store_result($stmt);
                 $count = mysqli_stmt_num_rows($stmt);
                 if($count > 0) {
                     return true;
@@ -63,8 +33,8 @@
             }
         }
 
-        private getPriority($path) {
-            if($stmt = mysqli_prepare($conn, "SELECT priority FROM path WHERE path = ?")){
+        private function getPriority($path) {
+            if($stmt = mysqli_prepare($this->conn, "SELECT priority FROM path WHERE path = ?")){
                 mysqli_stmt_bind_param($stmt, 's', $path);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_bind_result($stmt, $priority);
@@ -74,6 +44,98 @@
             }
 
             return $priority;
+        }
+
+        private function getPath($level) {
+            if($this->checkPathAvail($level)) {
+                $maxPriority = $this->getMaxPriority($level);
+                if($stmt = mysqli_prepare($this->conn, "SELECT path FROM path WHERE priority = ? AND level = ?")) {
+                    $newLevel = $level+1;
+                    mysqli_stmt_bind_param($stmt, 'ii', $maxPriority, $newLevel);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_bind_result($stmt, $nextPath);
+                    mysqli_stmt_fetch($stmt);
+
+                    $reducedPriority = $maxPriority-1;
+                    if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
+                        mysqli_stmt_bind_param($stmt, 'is', $reducedPriority, $nextPath);
+                        mysqli_stmt_execute($stmt);
+                    }
+                } else {
+                    return "getPath Error";
+                }
+
+                return $nextPath;
+            } else {
+                return "";
+            }
+        }
+
+        private function getMaxPriority($level) {
+            if($stmt = mysqli_prepare($this->conn, "SELECT max(priority) as max FROM path WHERE level = ?")) {
+                $newLevel = $level+1;
+                mysqli_stmt_bind_param($stmt, 'i', $newLevel);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_bind_result($stmt, $max);
+                mysqli_stmt_fetch($stmt);
+            } else {
+                return "Path Avail Error";
+            }
+
+            return $max;
+        }
+
+        private function checkPathAvail($level) {
+            if($stmt = mysqli_prepare($this->conn, "SELECT max(priority) as max FROM path WHERE level = ?")) {
+                $newLevel = $level+1;
+                mysqli_stmt_bind_param($stmt, 'i', $newLevel);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_bind_result($stmt, $max);
+                mysqli_stmt_fetch($stmt);
+            } else {
+                return "Path Avail Error";
+            }
+
+            if($max >= 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        public function updatePath($level, $path, $status) {
+            if($this->isPathExist($path)) {
+                if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
+                    if($status == '1')
+                        $newPriority = $this->getPriority($path)-1;
+                    else 
+                        $newPriority = $this->getPriority($path)+1;
+                    mysqli_stmt_bind_param($stmt, 'is', $newPriority, $path);
+                    mysqli_stmt_execute($stmt);
+                    return $this->getPath($level);
+                }
+                
+            } else {
+                if($stmt = mysqli_prepare($this->conn, "INSERT INTO path (level, path) VALUES (?, ?)")) {
+                    mysqli_stmt_bind_param($stmt, 'is', $level, $path);
+                    mysqli_stmt_execute($stmt);
+                }
+                if($status == '1'){
+                    $newPriority = $this->getPriority($path)-1;
+                    if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
+                        mysqli_stmt_bind_param($stmt, 'is', $newPriority, $path);
+                        mysqli_stmt_execute($stmt);
+                    }
+                    return $this->getPath($level);
+                } elseif ($status == '-1') {
+                    $newPriority = $this->getPriority($path)+1;
+                    if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
+                        mysqli_stmt_bind_param($stmt, 'is', $newPriority, $path);
+                        mysqli_stmt_execute($stmt);
+                    }
+                    return $this->getPath($level);
+                } 
+            }
         }
 
     }
