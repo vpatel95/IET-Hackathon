@@ -9,8 +9,11 @@
 		# code..
 	}elseif ($task == 'login') {
 		# code...
-	} elseif ($task == 'updatePriority') {
-		$pathObj->updatePath();
+	} elseif ($task == 'updatepriority') {
+		$level = $_POST['level'];
+		$path = $_POST['path'];
+		$status = $_POST['status'];
+		$pathObj->updatePath($level, $path, $status);
 	} elseif ($task == '') {
 		# code...
 	} elseif ($task == '') {
