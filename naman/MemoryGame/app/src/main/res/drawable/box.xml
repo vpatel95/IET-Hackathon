@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tochan"
     android:shape="rectangle" android:padding="15dp">
-    <solid android:color="#FBD982"/>
-
+    <solid android:color="#F5F5F5"/>
 
     <corners
         android:bottomRightRadius="10dp"
         android:bottomLeftRadius="10dp"
         android:topLeftRadius="7dp"
         android:topRightRadius="7dp"/>
-    <stroke android:width="6dip" android:color="#F1A81E" />
+
+
 </shape>

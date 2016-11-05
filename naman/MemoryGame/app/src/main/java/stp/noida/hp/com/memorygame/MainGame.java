@@ -1,7 +1,11 @@
 package stp.noida.hp.com.memorygame;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -34,23 +38,27 @@ import static java.lang.System.exit;
 public class MainGame extends AppCompatActivity {
 Button b11,b12,b13,b21,b22,b23,b31,b32,b33,but;
     Handler handler;
+    String path2="";
     anim1 tlist=new anim1();
-
+    private SQLiteDatabase db;
     int ar[]={11,12,13,21,22,23,31,32,33};
     int i=0,flag1=1;
     int stat=0;
+    int update1,priority;
+    String pathe="";
+   String pathlo="";
     int level=1,value1,value2;
     String[] co={"#81D4FA","#FFE082","#FFAB91","#80CBC4"};
     ArrayList<Integer> path,path1;
 int[] test1={11,31,32,21,11};
-
-String UPLOAD_URL="http://ved.pe.hu/index.php";
+    String UPLOAD_URL="http://10.5.58.21/IET-Hackathon/ved/index.php";
+//String UPLOAD_URL="http://ved.pe.hu/index.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_game);
          b11=(Button)findViewById(R.id.first1);
-
+           createDatabase();
         b12=(Button)findViewById(R.id.first2);
 
         b13=(Button)findViewById(R.id.first3);
@@ -60,13 +68,15 @@ String UPLOAD_URL="http://ved.pe.hu/index.php";
          b31=(Button)findViewById(R.id.third1);
          b32=(Button)findViewById(R.id.third2);
          b33=(Button)findViewById(R.id.third3);
+        deleteTitle();//server
         TextView t=(TextView)findViewById(R.id.textView);
         t.setText("LEVEL "+(level));
 try {
-    generator();
+    generator(1);
 
 }catch (Exception e){}
 clickon();
+        levelupdate();//server
 Button bl=(Button)findViewById(R.id.button);
         bl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +90,63 @@ Button bl=(Button)findViewById(R.id.button);
         });
    //opening();
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private void levelupdate()
+    {
+        final ProgressDialog loading = ProgressDialog.show(MainGame.this, "Getting Info...", "Please wait...", false, false);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        //Disimissing the progress dialog
+                        loading.dismiss();
+                        if(!s.equals(""))
+                       level=Integer.parseInt(s);
+                        //  Toast.makeText(MainGame.this, s, Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        //Dismissing the progress dialog
+                        loading.dismiss();
+
+                        //Showing toast   + volleyError.getMessage().toString()
+                        Toast.makeText(MainGame.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //Converting Bitmap to String
+
+
+                //Getting Image Name
+                SharedPreferences prefs = getSharedPreferences("potential", MODE_PRIVATE);
+                String check=prefs.getString("username","");
+                String status=flag1+"";
+
+
+                //  String pass=pass1.getText().toString().trim();
+                //Creating parameters
+                Map<String,String> params = new Hashtable<String, String>();
+                //Adding paramet
+                params.put("username",check.trim());
+
+                params.put("task","getlevel");
+
+                //returning parameters
+                return params;
+            }
+        };
+
+        //Creating a Request Queue
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        //Adding request to the queue
+        requestQueue.add(stringRequest);
+
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private void disabling(boolean tr){
         b11.setEnabled(tr);
         b12.setEnabled(tr);
@@ -283,15 +350,20 @@ public void clickon() {
         t.setText("LEVEL "+(level+1));
         TextView t1=(TextView)findViewById(R.id.best);
         t1.setText("COOL!!");
+
         path1  =new ArrayList<Integer>();
         value1=level;
         int z=0;
         while(z<path.size()||z==0)
            {   path1.add(path.get(z)); System.out.println(".................."+path1.get(z));z++;
            }
+        String pass="";
+        for(int j=0;j<path1.size();j++){
+            pass=pass+","+path1.get(j);
+        } path2=pass;
         level++;stat=0;
         try {
-            generator();
+            generator(1);
 
         }catch (Exception e){}
         flag1=1;
@@ -308,6 +380,10 @@ public void clickon() {
         while(z<path.size()||z==0)
         {   path1.add(path.get(z)); System.out.println(".................."+path1.get(z));z++;
         }
+        String pass="";
+        for(int j=0;j<path1.size();j++){
+            pass=pass+","+path1.get(j);
+        } path2=pass;
       //  i=0;
         flag1=-1;
         uploadImage();
@@ -323,10 +399,13 @@ private void uploadImage(){
                 public void onResponse(String s) {
                     //Disimissing the progress dialog
                     loading.dismiss();
-                    if(s.trim().equals("success"))
-                    {
+                    if(s.trim().equals(""))
+                    {  insertIntoDB();
                     }
-                    else{}
+                    else{
+                        pathlo=s;
+                        generator(2);
+                    }
                       //  Toast.makeText(MainGame.this, s, Toast.LENGTH_LONG).show();
                 }
             },
@@ -335,7 +414,7 @@ private void uploadImage(){
                 public void onErrorResponse(VolleyError volleyError) {
                     //Dismissing the progress dialog
                     loading.dismiss();
-
+                    insertIntoDB();
                     //Showing toast   + volleyError.getMessage().toString()
                     Toast.makeText(MainGame.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
                 }
@@ -348,16 +427,14 @@ private void uploadImage(){
             //Getting Image Name
             String lev = value1+"";
             String status=flag1+"";
-            String pass="";
-            for(int j=0;j<path1.size();j++){
-                pass=pass+","+path1.get(j);
-            }
+
+
           //  String pass=pass1.getText().toString().trim();
             //Creating parameters
             Map<String,String> params = new Hashtable<String, String>();
             //Adding paramet
             params.put("level",lev.trim());
-            params.put("path",pass.trim());
+            params.put("path",path2.trim());
             params.put("status",status.trim());
             params.put("task","updatepriority");
 
@@ -373,9 +450,19 @@ private void uploadImage(){
     requestQueue.add(stringRequest);
 }
     /////////////////////////////////////////////////////////////////////////////////////////////////
-    private void generator(){
+    private void generator(int z){
         int l,pos;
       path  =new ArrayList<Integer>();
+        if(z==2){
+            pathlo=pathlo.substring(1,pathlo.length());
+            String[] arr = pathlo.split(",");
+            for(l=0;l<arr.length;l++){
+                path.add(Integer.parseInt(arr[l]));
+            }
+
+
+
+        }else{
         Random random = new Random();
         for (l=0;l<level;l++) {
             pos=random.nextInt(9);
@@ -388,7 +475,102 @@ private void uploadImage(){
                }else {l--;;}
 
         }else{ path.add(ar[pos]); }
-        }
+        }}
     }
+///////////////////////////////////////////////////////////////////////////////////////////////////
+protected void createDatabase(){
+    db=openOrCreateDatabase("PersonDB", Context.MODE_PRIVATE, null);
+    db.execSQL("CREATE TABLE IF NOT EXISTS product(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, level NUMBER(6), path VARCHAR(225), priority NUMBER(6) );");
+    //  Toast.makeText(getApplicationContext(),"Saved Successfully", Toast.LENGTH_LONG).show();
+}
+    protected void insertIntoDB(){
+       try{
+                Cursor c=db.rawQuery("SELECT * FROM product WHERE path='"+path2+"'", null);
+                if(c.moveToFirst())
+                {
+                    String strSQL = "UPDATE product SET priority ="+(Integer.parseInt(c.getString(3))-flag1)+" WHERE id = "+ Integer.parseInt(c.getString(0));
 
+                    db.execSQL(strSQL);
+                    System.out.println("Error" + "Record exist");
+                }
+                else
+                {
+                    // Inserting record
+
+                    String query = "INSERT INTO product (level,path,priority) VALUES('"+value1+"', '"+path2+"', '"+flag1+"' );";
+                    db.execSQL(query);
+                    Toast.makeText(getApplicationContext(),"Saved Successfully", Toast.LENGTH_LONG).show();}
+                    } catch(Exception e){System.out.println(e+"");}
+    }
+    public void deleteTitle()
+    {
+        Cursor c=db.rawQuery("SELECT * FROM product WHERE priority=(SELECT max(priority) FROM product) ", null);
+        c.moveToFirst();
+       try{ while (c.getString(1)!=null){
+        update1=Integer.parseInt(c.getString(1))    ;
+            pathe=c.getString(2);
+            priority=Integer.parseInt(c.getString(3));
+            serverside();
+            c.moveToNext();
+        }}catch (Exception e){}
+    }
+    private void serverside(){
+        //Showing the progress dialog
+        final ProgressDialog loading = ProgressDialog.show(MainGame.this, "Uploading...", "Please wait...", false, false);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        //Disimissing the progress dialog
+                        loading.dismiss();
+                        Log.i("tag", s);
+                        Toast.makeText(getApplicationContext(),""+s,Toast.LENGTH_LONG).show();
+                        if(s.trim().equals("success"))
+                        {
+                            db.execSQL("DELETE FROM product");
+                        }
+                        else{}
+                        //  Toast.makeText(MainGame.this, s, Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        //Dismissing the progress dialog
+                        loading.dismiss();
+
+                        //Showing toast   + volleyError.getMessage().toString()
+                        Toast.makeText(MainGame.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //Converting Bitmap to String
+
+
+                //Getting Image Name
+                String lev = value1+"";
+                String status=flag1+"";
+
+
+                //  String pass=pass1.getText().toString().trim();
+                //Creating parameters
+                Map<String,String> params = new Hashtable<String, String>();
+                //Adding paramet
+                params.put("level",update1+"".trim());
+                params.put("path",pathe.trim());
+                params.put("status",priority+"");
+                params.put("task","updateserver");
+
+                //returning parameters
+                return params;
+            }
+        };
+
+        //Creating a Request Queue
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        //Adding request to the queue
+        requestQueue.add(stringRequest);
+    }
 }
