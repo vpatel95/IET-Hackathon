@@ -42,8 +42,23 @@
             } else {
                 return "Level Update Error";
             }
-
+            prevPattern();
             return "Success";
+        }
+
+        private function prevPattern() {
+            $sql = mysqli_query($conn, "SELECT max(level) FROM level");
+            $row = mysqli_fetch_row($sql);
+            $level = $row[0];
+            if($level > 0) {
+                if($stmt = mysqli_prepare($conn, "INSERT INTO prevPattern  VALUES (?, NULL, NULL, NULL, NULL, NULL)")) {
+                    mysqli_stmt_bind_param($stmt, 'i', $level);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                } else {
+                    return "Insert into prevPatter Failed";
+                }
+            }
         }
 
     }
