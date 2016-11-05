@@ -1,6 +1,7 @@
 <?php
 
-	require '../include/PathController.php';
+	//echo "ved";
+	include_once dirname(__FILE__) . '/include/PathController.php';
 	$pathObj = new PathController();
 
 	$task = $_POST['task'];
@@ -13,7 +14,7 @@
 		$level = $_POST['level'];
 		$path = $_POST['path'];
 		$status = $_POST['status'];
-		$pathObj->updatePath($level, $path, $status);
+		echo $pathObj->updatePath($level, $path, $status);
 	} elseif ($task == '') {
 		# code...
 	} elseif ($task == '') {
