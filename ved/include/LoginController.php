@@ -15,7 +15,6 @@
             // opening db connection
             $db = new DbConnect();
             $this->conn = $db->connect();
-            mysqli_autocommit($conn, FALSE);
         }
 
         public function login($username, $password) {
@@ -37,7 +36,7 @@
         }
 
         public function signup($username, $password) {
-            if($stmt = mysqli_prepare($conn, "INSERT INTO user VALUES (?,?)")){
+            if($stmt = mysqli_prepare($conn, "INSERT INTO user (username, password) VALUES (?,?)")){
                 mysqli_stmt_bind_param($stmt, 'ss', $username, $password);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
