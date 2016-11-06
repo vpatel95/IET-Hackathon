@@ -40,7 +40,7 @@ String user="";
                     uploadImage();
                 }
                 else{
-                    Toast.makeText(getApplicationContext()," Password Creditials ",Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext()," Password DoesNot Match ",Toast.LENGTH_LONG);
                 }
             }
         });
@@ -72,7 +72,7 @@ String user="";
                         loading.dismiss();
 
                         //Showing toast   + volleyError.getMessage().toString()
-                        Toast.makeText(signup.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
+                     //   Toast.makeText(signup.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
                     }
                 }){
             @Override

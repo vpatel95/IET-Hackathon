@@ -84,11 +84,12 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_above="@+id/button"
+    android:textSize="20dp"
     android:layout_gravity="center"
     android:text=" No account yet? Create one "
     android:layout_marginTop="5dp"
     android:id="@+id/signup"
-    android:textColor="@android:color/background_dark"
+    android:textColor="@android:color/background_light"
     android:background="#57a1a1a1" />
     </LinearLayout>
 </RelativeLayout>

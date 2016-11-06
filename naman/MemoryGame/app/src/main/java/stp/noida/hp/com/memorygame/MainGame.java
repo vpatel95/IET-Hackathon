@@ -94,6 +94,8 @@ Button bl=(Button)findViewById(R.id.button);
             @Override
             public void onClick(View v) {
                 i = 0;value2++;
+                TextView t1=(TextView)findViewById(R.id.best);
+                t1.setText("Remember..");
                 for (int j = 0; j < 9; j++)
              disabling(false);
            gamestart(path.get(i));
@@ -176,13 +178,16 @@ Button bl=(Button)findViewById(R.id.button);
     }
     ///////////////////////////////////////////////////////////////////////////////////////
     protected int test(int a,int c){
-        System.out.println(">>"+a+" "+level+" "+stat+" "+c);
-        if(path.get(a)==c){
+       {
+          System.out.println(">>" + a + " " + level + " " + stat + " " + c);
+          if (path.get(a) == c) {
 
-            return a+1;
-        }
-        else
-        {return  0;}
+              return a + 1;
+          } else {
+              return 0;
+          }
+      }
+
     }
 
     protected void gamestart(int select){
@@ -381,7 +386,7 @@ public void clickon() {
         t.setText("LEVEL "+(level+1));
         TextView t1=(TextView)findViewById(R.id.best);
         t1.setText("Press Play To START");
-        value2=0;
+
         path1  =new ArrayList<Integer>();
         value1=level;
         int z=0;
@@ -392,11 +397,7 @@ public void clickon() {
         for(int j=0;j<path1.size();j++){
             pass=pass+","+path1.get(j);
         } path2=pass;
-        level++;stat=0;
-        try {
-            generator(1);
 
-        }catch (Exception e){}
         flag1=1;
         SharedPreferences.Editor editor = getSharedPreferences("potential", MODE_PRIVATE).edit();
         editor.putInt("level",level );
@@ -444,8 +445,8 @@ Button dialogb=(Button)dialog.findViewById(R.id.again);
      dialogb.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-             dialog.dismiss();level--;generator(1); TextView t=(TextView)findViewById(R.id.textView);
-             t.setText("LEVEL "+(level));
+             dialog.dismiss();generator(1); TextView t=(TextView)findViewById(R.id.textView);
+             t.setText("LEVEL "+(level)); value2=0;
              LinearLayout l=(LinearLayout)findViewById(R.id.low);
              AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(getApplicationContext(),R.animator.animate);
              set.setTarget(l);
@@ -456,6 +457,11 @@ Button dialogb=(Button)dialog.findViewById(R.id.again);
         dialogb1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                level++;stat=0; value2=0;
+                try {
+                    generator(1);
+
+                }catch (Exception e){}
                 dialog.dismiss();
                 LinearLayout l=(LinearLayout)findViewById(R.id.low);
                 AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(getApplicationContext(),R.animator.animate);
@@ -493,13 +499,13 @@ Button dialogb=(Button)dialog.findViewById(R.id.again);
 private void uploadImage(){
     //Showing the progress dialog
 
-    final ProgressDialog loading = ProgressDialog.show(MainGame.this, "Uploading...", "Please wait...", false, false);
+
     StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String s) {
                     //Disimissing the progress dialog
-                    loading.dismiss();
+
                     if(s.trim().equals(""))
                     {  insertIntoDB();
                     }
@@ -515,7 +521,7 @@ private void uploadImage(){
                 @Override
                 public void onErrorResponse(VolleyError volleyError) {
                     //Dismissing the progress dialog
-                    loading.dismiss();
+
                     insertIntoDB();
                     //Showing toast   + volleyError.getMessage().toString()
                     Toast.makeText(MainGame.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
@@ -620,13 +626,13 @@ protected void createDatabase(){
     }
     private void serverside(){
         //Showing the progress dialog
-        final ProgressDialog loading = ProgressDialog.show(MainGame.this, "Uploading...", "Please wait...", false, false);
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
                         //Disimissing the progress dialog
-                        loading.dismiss();
+
                         Log.i("tag", s);
                       //  Toast.makeText(getApplicationContext(),""+s,Toast.LENGTH_LONG).show();
                         if(s.trim().equals("success"))
@@ -641,7 +647,7 @@ protected void createDatabase(){
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         //Dismissing the progress dialog
-                        loading.dismiss();
+
 
                         //Showing toast   + volleyError.getMessage().toString()
                     //    Toast.makeText(MainGame.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
@@ -679,13 +685,13 @@ protected void createDatabase(){
     }
     private void levelo(){
         //Showing the progress dialog
-        final ProgressDialog loading = ProgressDialog.show(MainGame.this, "Uploading...", "Please wait...", false, false);
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
                         //Disimissing the progress dialog
-                        loading.dismiss();
+
                        System.out.println(s+"6uygyyjjhy");
 
                         if(s.trim().equals("success"))
@@ -700,7 +706,7 @@ protected void createDatabase(){
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         //Dismissing the progress dialog
-                        loading.dismiss();
+
 
                         //Showing toast   + volleyError.getMessage().toString()
                   //      Toast.makeText(MainGame.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
@@ -737,4 +743,5 @@ protected void createDatabase(){
         //Adding request to the queue
         requestQueue.add(stringRequest);
     }
+    
 }

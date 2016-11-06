@@ -54,14 +54,14 @@ String user="";
 
     private void uploadImage(){
         //Showing the progress dialog
-        final ProgressDialog loading = ProgressDialog.show(signinwith.this, "Uploading...", "Please wait...", false, false);
+        final ProgressDialog loading = ProgressDialog.show(signinwith.this, "Checking...", "Please wait...", false, false);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
                         //Disimissing the progress dialog
                         loading.dismiss();
-                        Toast.makeText(getApplicationContext(),""+s,Toast.LENGTH_LONG).show();
+
                         if(s.trim().equals("success"))
                         {SharedPreferences.Editor editor = getSharedPreferences("potential", MODE_PRIVATE).edit();
                             editor.putString("username",user );
@@ -81,7 +81,7 @@ String user="";
                         loading.dismiss();
 
                         //Showing toast   + volleyError.getMessage().toString()
-                        Toast.makeText(signinwith.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
+                    //    Toast.makeText(signinwith.this,"Error"+volleyError, Toast.LENGTH_LONG).show();
                     }
                 }){
             @Override
