@@ -22,8 +22,8 @@ import java.util.Map;
 
 public class signup extends AppCompatActivity {
 String user="";
-    String UPLOAD_URL="http://10.5.58.21/IET-Hackathon/ved/index.php";
-   // String UPLOAD_URL="http://ved.pe.hu/index.php";
+   // String UPLOAD_URL="http://10.5.58.21/IET-Hackathon/ved/index.php";
+    String UPLOAD_URL="http://ved.pe.hu/index.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +54,7 @@ String user="";
                     public void onResponse(String s) {
                         //Disimissing the progress dialog
                         loading.dismiss();
+                        System.out.println(s+".........................................");
                         if(s.trim().equals("success"))
                         {
                             startActivity(new Intent(signup.this,signinwith.class));

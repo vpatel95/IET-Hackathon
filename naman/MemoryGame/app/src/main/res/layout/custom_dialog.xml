@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CFD8DC">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Level 1"
+        android:gravity="center"
+        android:textSize="50dp"
+        android:id="@+id/level"/>
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/star"
+        android:id="@+id/star1"
+        android:layout_gravity="center"
+        android:layout_height="50dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="50dp"
+
+            android:id="@+id/star2"
+            android:background="@drawable/star"
+            android:layout_height="50dp" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_gravity="center"
+            android:id="@+id/star3"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/star"
+            android:layout_height="50dp" />
+    </LinearLayout>
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:textSize="30dp"
+    android:text="COMPLETED"/>
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="horizontal">
+    <Button
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+         android:text="RePlay"
+        android:layout_margin="10dp"
+        android:id="@+id/again"
+        android:layout_height="wrap_content"
+        android:background="#0277bd"
+        android:textColor="@android:color/background_light" />
+    <Button
+        android:layout_width="0dp"
+android:layout_weight="0.5"
+        android:layout_margin="10dp"
+        android:id="@+id/next"
+       android:text="NEXT LEVEL"
+android:padding="3dp"
+        android:layout_height="wrap_content"
+        android:background="#0277bd"
+        android:textColor="@android:color/background_light" />
+</LinearLayout>
+</LinearLayout>

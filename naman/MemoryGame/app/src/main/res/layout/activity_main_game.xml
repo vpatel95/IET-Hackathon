@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="350dp"
         android:layout_below="@+id/textView"
         android:id="@+id/low"
         android:orientation="vertical"
@@ -27,14 +27,16 @@
             android:orientation="horizontal">
         <Button
             android:layout_width="0dip"
-            android:layout_height="match_parent" android:layout_margin="5dp"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:layout_weight="0.3"
             android:id="@+id/first1"
             android:background="@drawable/editted"
+
             android:visibility="visible" />
         <Button
             android:layout_width="0dip"
-            android:background="@drawable/editted" android:layout_margin="5dp"
+            android:background="@drawable/first2" android:layout_margin="5dp"
             android:layout_height="match_parent"
 
             android:layout_weight="0.3"
@@ -42,7 +44,7 @@
         <Button
             android:layout_width="0dip"
             android:layout_height="match_parent"
-            android:background="@drawable/editted" android:layout_margin="5dp"
+            android:background="@drawable/first3" android:layout_margin="5dp"
             android:layout_weight="0.3"
             android:id="@+id/third1" />
         </LinearLayout>
@@ -53,18 +55,22 @@
         android:orientation="horizontal">
         <Button
             android:layout_width="0dip"
-            android:layout_height="match_parent" android:background="@drawable/editted"
-            android:layout_weight="0.3" android:layout_margin="5dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/second1"
+            android:layout_weight="0.3"
+            android:layout_margin="5dp"
             android:id="@+id/first2" />
         <Button
             android:layout_width="0dip"
-            android:layout_height="match_parent" android:background="@drawable/editted"
+            android:layout_height="match_parent"
+            android:background="@drawable/second2"
             android:layout_weight="0.3" android:layout_margin="5dp"
             android:id="@+id/second2" />
 
         <Button
             android:layout_width="0dip" android:layout_margin="5dp"
-            android:layout_height="match_parent" android:background="@drawable/editted"
+            android:layout_height="match_parent"
+            android:background="@drawable/second3"
             android:layout_weight="0.3"
             android:id="@+id/third2" />
     </LinearLayout>
@@ -75,53 +81,56 @@
         android:orientation="horizontal">
         <Button
             android:layout_width="0dip"
-            android:layout_height="match_parent" android:background="@drawable/editted"
+            android:layout_height="match_parent"
+            android:background="@drawable/third1"
             android:layout_weight="0.3"
             android:layout_margin="5dp"
             android:id="@+id/first3" />
         <Button
-            android:layout_width="0dip" android:background="@drawable/editted"
+            android:layout_width="0dip"
+            android:background="@drawable/third2"
             android:layout_height="match_parent"
             android:layout_weight="0.3" android:layout_margin="5dp"
             android:id="@+id/second3" />
         <Button
             android:layout_width="0dip"
-            android:layout_height="match_parent" android:background="@drawable/editted"
+            android:layout_height="match_parent"
+            android:background="@drawable/third3"
            android:layout_weight="0.3" android:layout_margin="5dp"
             android:id="@+id/third3" />
     </LinearLayout>
     </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+       android:layout_below="@+id/textView"
+        android:gravity="center"
         android:id="@+id/best"
         android:textSize="30sp"
 
         />
 
     <Button
-        android:text="HINT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:id="@+id/button"
-        android:layout_alignBaseline="@+id/best"
-        android:layout_alignBottom="@+id/best"
-        android:layout_toRightOf="@+id/textView"
-        android:layout_toEndOf="@+id/textView"
-        android:layout_marginLeft="43dp"
-        android:layout_marginStart="43dp" />
+        android:background="@drawable/replay"
+      android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
 
     <TextView
         android:text="TextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
 
-        android:textSize="20dp"
+        android:textSize="40dp"
         android:id="@+id/textView"
         tools:text="level 1"
-        android:layout_alignBottom="@+id/best"
+
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 </RelativeLayout>
