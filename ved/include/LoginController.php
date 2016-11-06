@@ -18,29 +18,37 @@
         }
 
         public function login($username, $password) {
-            if($stmt = mysqli_prepare($conn, "SELECT id FROM user WHERE username=? AND password=?")){
+            if($stmt = mysqli_prepare($this->conn, "SELECT id FROM user WHERE username=? AND password=?")){
                 mysqli_stmt_bind_param($stmt, 'ss', $username, $password);
                 mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-                $row = mysqli_fetch_assoc($result);
+                mysqli_stmt_store_result($stmt);
                 $count = mysqli_stmt_num_rows($stmt);
                 mysqli_stmt_close($stmt);
             }
 
             if($count == 1) {
-                return 1;
+                return "success";
             } else {
-                return 0;
+                return $count;
             }
             
         }
 
         public function signup($username, $password) {
-            if($stmt = mysqli_prepare($conn, "INSERT INTO user (username, password) VALUES (?,?)")){
+            if($stmt = mysqli_prepare($this->conn, "INSERT INTO user (username, password) VALUES (?,?)")){
                 mysqli_stmt_bind_param($stmt, 'ss', $username, $password);
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
+                if($stmt = mysqli_prepare($this->conn, "INSERT INTO level (username) VALUES (?)")){
+                    mysqli_stmt_bind_param($stmt, 's', $username);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+            } else {
+                return "signup error";
             }
+
+            return "success";
         }
 
     }

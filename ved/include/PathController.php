@@ -23,6 +23,7 @@
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_store_result($stmt);
                 $count = mysqli_stmt_num_rows($stmt);
+                mysqli_stmt_close($stmt);
                 if($count > 0) {
                     return true;
                 } else {
@@ -39,6 +40,7 @@
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_bind_result($stmt, $priority);
                 mysqli_stmt_fetch($stmt);
+                mysqli_stmt_close($stmt);
             } else {
                 return "getPriority Error";
             }
@@ -55,11 +57,13 @@
                     mysqli_stmt_execute($stmt);
                     mysqli_stmt_bind_result($stmt, $nextPath);
                     mysqli_stmt_fetch($stmt);
+                    mysqli_stmt_close($stmt);
 
                     $reducedPriority = $maxPriority-1;
                     if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
                         mysqli_stmt_bind_param($stmt, 'is', $reducedPriority, $nextPath);
                         mysqli_stmt_execute($stmt);
+                        mysqli_stmt_close($stmt);
                     }
                 } else {
                     return "getPath Error";
@@ -67,7 +71,7 @@
 
                 return $nextPath;
             } else {
-                return "";
+                return "nopath";
             }
         }
 
@@ -78,6 +82,7 @@
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_bind_result($stmt, $max);
                 mysqli_stmt_fetch($stmt);
+                mysqli_stmt_close($stmt);
             } else {
                 return "Path Avail Error";
             }
@@ -92,6 +97,7 @@
                 mysqli_stmt_execute($stmt);
                 mysqli_stmt_bind_result($stmt, $max);
                 mysqli_stmt_fetch($stmt);
+                mysqli_stmt_close($stmt);
             } else {
                 return "Path Avail Error";
             }
@@ -112,6 +118,7 @@
                         $newPriority = $this->getPriority($path)+1;
                     mysqli_stmt_bind_param($stmt, 'is', $newPriority, $path);
                     mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
                     return $this->getPath($level);
                 }
                 
@@ -119,12 +126,14 @@
                 if($stmt = mysqli_prepare($this->conn, "INSERT INTO path (level, path) VALUES (?, ?)")) {
                     mysqli_stmt_bind_param($stmt, 'is', $level, $path);
                     mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
                 }
                 if($status == '1'){
                     $newPriority = $this->getPriority($path)-1;
                     if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
                         mysqli_stmt_bind_param($stmt, 'is', $newPriority, $path);
                         mysqli_stmt_execute($stmt);
+                        mysqli_stmt_close($stmt);
                     }
                     return $this->getPath($level);
                 } elseif ($status == '-1') {
@@ -132,10 +141,35 @@
                     if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
                         mysqli_stmt_bind_param($stmt, 'is', $newPriority, $path);
                         mysqli_stmt_execute($stmt);
+                        mysqli_stmt_close($stmt);
                     }
                     return $this->getPath($level);
                 } 
             }
+        }
+
+        public function updateOfflinePath($level, $path, $priority) {
+            if($this->isPathExist($path)) {
+                if($stmt = mysqli_prepare($this->conn, "UPDATE path SET priority = ? WHERE path = ?")){
+                    mysqli_stmt_bind_param($stmt, 'is', $priority, $path);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                    return $this->getPath($level);
+                } else {
+                    return "updateOfflinePath Error";
+                }
+                
+            } else {
+                if($stmt = mysqli_prepare($this->conn, "INSERT INTO path (level, path, priority) VALUES (?, ?, ?)")) {
+                    mysqli_stmt_bind_param($stmt, 'isi', $level, $path, $priority);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                } else {
+                    return "insertOfflinePath Error";
+                }
+            }
+
+            return "success";
         }
 
     }
